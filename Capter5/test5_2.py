@@ -5,31 +5,31 @@
 	@Author: 	Unname_Bao
 '''
 from nltk.probability import FreqDist
+import operator
 from sklearn.neighbors import KNeighborsClassifier
 import numpy as np
-import operator
 
-N = 30
+N = 50
 def load_user_cmd(filename):
-	cmd_list = []
-	dist_max = []
-	dist_min = []
-	dist     = []
+	cmd_list = []		#存储所有操作序列
+	dist_max = []		#存储用户使用频率最高的50个命令
+	dist_min = []		#存储用户使用频率最低的50个命令
+	dist     = []		#存储所有命令
 	with open(filename) as f:
 		i = 0
-		x = []
+		x = []			#存储每个操作序列
 		for line in f:
-			line = line.strip('\n')
-			x.append(line)
-			dist.append(line)
+			line = line.strip('\n')		#去掉空行
+			x.append(line)				#组合成操作序列
+			dist.append(line)			#添加操作命令
 			i+=1
 			if i==100:
-				cmd_list.append(x)
-				x = []
+				cmd_list.append(x)		#每计数100个添加操作序列
+				x = []					#然后将操作序列清空
 				i = 0
-	fdist    = sorted(FreqDist(dist).items(),key = operator.itemgetter(1),reverse = True)
-	dist_max = set([item[0] for item in fdist[:50]])
-	dist_min = set([item[0] for item in fdist[-50:]])
+	fdist    = sorted(FreqDist(dist).items(),key = operator.itemgetter(1),reverse = True)	#获得操作命令使用频率并排序
+	dist_max = set([item[0] for item in fdist[:50]])		#取出前50个操作命令的指令
+	dist_min = set([item[0] for item in fdist[-50:]])		#取出前50个操作命令的指令
 	return cmd_list,dist_max,dist_min 
 
 def get_user_cmd_feature(user_cmd_list,dist_max,dist_min):
@@ -45,7 +45,7 @@ def get_user_cmd_feature(user_cmd_list,dist_max,dist_min):
 		user_cmd_feature.append(x)
 	return user_cmd_feature
 
-def get_label(filename,index=0):
+def get_label(filename,index=0):		#读取标签，index+1即用户编号
 	x=[]
 	with open(filename) as f:
 		for line in f:
